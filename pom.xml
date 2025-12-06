@@ -24,6 +24,7 @@
 	<modules>
 		<module>shardingspheredemo</module>
 		<module>rabbitMqdemo</module>
+		<module>mq-demo</module>
 	</modules>
 	<scm>
 		<connection/>
