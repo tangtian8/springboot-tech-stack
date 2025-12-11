@@ -6,9 +6,9 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="quartz" />
         <module name="rabbitMqdemo" />
         <module name="shardingspheredemo" />
-        <module name="mq-demo" />
       </profile>
     </annotationProcessing>
   </component>
@@ -16,7 +16,9 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="demo" options="-parameters" />
       <module name="mq-demo" options="-parameters" />
+      <module name="quartz" options="-parameters" />
       <module name="rabbitMqdemo" options="-parameters" />
+      <module name="scheduling-demo" options="-parameters" />
       <module name="shardingspheredemo" options="-parameters" />
     </option>
   </component>
