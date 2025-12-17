@@ -17,6 +17,7 @@ public class StatefulDumbJob implements Job {
 
 	public StatefulDumbJob() {
 	}
+
 	public void execute(JobExecutionContext context)
 			throws JobExecutionException {
 		System.err.println("---" + context.getJobDetail().getKey()

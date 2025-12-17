@@ -1,9 +1,0 @@
-spring:
-  application:
-    name: demo
-  datasource:
-    driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
-    url: jdbc:shardingsphere:classpath:sharding.yaml
-mybatis-plus:
-  mapper-locations: classpath*:mapper/*Mapper.xml
-  type-aliases-package: top.tangtian.demo.sharding.domain  # 实体类包路径

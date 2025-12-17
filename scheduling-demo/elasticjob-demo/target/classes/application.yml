@@ -1,0 +1,269 @@
+spring:
+  application:
+    name: reconciliation-system
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tangtian
+    username: dhis2
+    password: dhis2
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+
+elasticjob:
+  # ==================== ZooKeeper 注册中心配置 ====================
+  regCenter:
+    # ZooKeeper服务器地址列表
+    # 单机: localhost:2181
+    # 集群: 192.168.1.101:2181,192.168.1.102:2181,192.168.1.103:2181
+    serverLists: localhost:2181
+
+    # 命名空间，用于隔离不同环境或项目的作业
+    # 会在ZK中创建 /reconciliation-job 根节点
+    # 建议: dev环境用 xxx-dev, prod环境用 xxx-prod
+    namespace: reconciliation-job
+
+    # 连接ZooKeeper的超时时间（毫秒）
+    # 默认15000ms，网络较差时可适当增加
+    # 超过此时间未连接成功会抛出异常
+    connectionTimeoutMilliseconds: 15000
+
+    # 会话超时时间（毫秒）
+    # 默认60000ms，客户端与ZK保持心跳的最长时间
+    # 超过此时间未收到心跳，ZK会删除临时节点，触发失效转移
+    # 注意: 不宜设置过短，可能导致频繁的实例上下线
+    sessionTimeoutMilliseconds: 60000
+
+    # 其他可选参数(未配置，使用默认值):
+    # baseSleepTimeMilliseconds: 1000      # 重试等待初始时间
+    # maxSleepTimeMilliseconds: 3000       # 重试等待最大时间
+    # maxRetries: 3                        # 最大重试次数
+    # digest: username:password            # ZK权限验证
+
+  # ==================== 事件追踪配置 ====================
+  tracing:
+    # 事件追踪类型: RDB(关系数据库) 或 不配置
+    # RDB类型会将作业执行历史记录到数据库
+    # 需要配置数据源: spring.datasource.*
+    # 数据库表: JOB_EXECUTION_LOG(执行日志), JOB_STATUS_TRACE_LOG(状态追踪)
+#    type: RDB
+#  # 显式配置追踪数据源
+#  tracingDataSource:
+#    driverClassName: org.postgresql.Driver
+#    url: jdbc:postgresql://localhost:5432/tangtian
+#    username: dhis2
+#    password: dhis2
+
+    # 作用:
+    # 1. 记录每次任务执行的开始时间、结束时间、执行结果
+    # 2. 追踪任务状态变化: RUNNING -> SUCCESS/FAIL
+    # 3. 便于问题排查和执行统计分析
+
+  # ==================== 作业配置 ====================
+    # 作业配置
+  jobs:
+    # 1. 按日期分片的订单对账任务
+    orderReconciliationByDateJob:
+      elasticJobClass: top.tangtian.job.samplejob.OrderReconciliationByDateJob
+      cron: 0 0 2 * * ?                    # 每天凌晨2点执行
+      shardingTotalCount: 5                 # 5个分片
+      shardingItemParameters: 0=2024-12-01,1=2024-12-02,2=2024-12-03,3=2024-12-04,4=2024-12-05
+      description: 订单对账任务-按日期分片
+      overwrite: true
+      disabled: false
+      failover: true                        # 启用失效转移
+      misfire: true                         # 启用错过任务重新执行
+      maxTimeDiffSeconds: -1                # 最大时差，-1表示不检查
+      reconcileIntervalMinutes: 10          # 修复分片一致性的间隔分钟数
+
+    # 2. 按金额范围分片的支付对账任务
+    paymentReconciliationByAmountJob:
+      elasticJobClass: top.tangtian.job.samplejob.PaymentReconciliationByAmountJob
+      cron: 0 30 2 * * ?                    # 每天凌晨2:30执行
+      shardingTotalCount: 4                 # 4个分片
+      shardingItemParameters: 0=0-100,1=100-500,2=500-1000,3=1000-99999
+      description: 支付对账任务-按金额范围分片
+      overwrite: true
+      failover: true
+      misfire: true
+
+    # 3. 按用户ID分片的订单对账任务
+    userOrderReconciliationJob:
+      elasticJobClass: top.tangtian.job.samplejob.UserOrderReconciliationJob
+      cron: 0 0 3 * * ?                     # 每天凌晨3点执行
+      shardingTotalCount: 10                # 10个分片
+      shardingItemParameters: 0=0-999,1=1000-1999,2=2000-2999,3=3000-3999,4=4000-4999,5=5000-5999,6=6000-6999,7=7000-7999,8=8000-8999,9=9000-9999
+      description: 用户订单对账任务-按用户ID分片
+      overwrite: true
+      failover: true
+      misfire: true
+
+    # 4. 基础数据流对账任务
+    dataflowReconciliationJob:
+      elasticJobClass: top.tangtian.job.dataflowjob.DataflowReconciliationJob
+      cron: 0 */10 * * * ?                  # 每10分钟执行
+      shardingTotalCount: 3                 # 3个分片
+      shardingItemParameters: 0=PENDING,1=PROCESSING,2=FAILED
+      description: 数据流对账任务
+      overwrite: true
+      jobParameter: batchSize=100           # 任务参数
+
+    # 5. 订单状态同步数据流任务
+    orderStatusSyncJob:
+      elasticJobClass: top.tangtian.job.dataflowjob.OrderStatusSyncDataflowJob
+      cron: 0 */5 * * * ?                   # 每5分钟执行
+      shardingTotalCount: 4                 # 4个分片
+      shardingItemParameters: 0=PENDING,1=PAID,2=SHIPPED,3=DELIVERED
+      description: 订单状态同步任务
+      overwrite: true
+      streamingProcess: false               # 不启用持续流式处理
+
+    # 6. 支付对账数据流任务
+    paymentReconciliationDataflowJob:
+      elasticJobClass: top.tangtian.job.dataflowjob.PaymentReconciliationDataflowJob
+      cron: 0 */3 * * * ?                   # 每3分钟执行
+      shardingTotalCount: 4                 # 4个分片
+      shardingItemParameters: 0=ALIPAY,1=WECHAT,2=BANK_CARD,3=CREDIT_CARD
+      description: 支付对账数据流任务
+      overwrite: true
+      failover: true                        # 启用失效转移
+      streamingProcess: false
+
+    # 7. 订单批量导入任务
+    orderImportJob:
+      elasticJobClass: top.tangtian.job.dataflowjob.OrderImportDataflowJob
+      cron: 0 0 1 * * ?                     # 每天凌晨1点执行
+      shardingTotalCount: 5                 # 5个分片
+      shardingItemParameters: 0=FILE1,1=FILE2,2=FILE3,3=FILE4,4=FILE5
+      description: 订单批量导入任务
+      overwrite: true
+      streamingProcess: false
+
+    # 8. 消息队列消费任务（持续运行）
+    messageQueueConsumerJob:
+      elasticJobClass: top.tangtian.job.dataflowjob.MessageQueueConsumerDataflowJob
+      cron: 0/30 * * * * ?                  # 每30秒执行一次
+      shardingTotalCount: 3                 # 3个分片
+      shardingItemParameters: 0=ORDER_CREATED,1=PAYMENT_SUCCESS,2=ORDER_SHIPPED
+      description: 消息队列消费任务
+      overwrite: true
+      streamingProcess: true                # 启用持续流式处理
+      disabled: false                       # 初始状态：启用
+#  jobs:
+#    # -------------------- 订单对账任务 --------------------
+#    orderReconciliationJob:
+#      # 作业实现类的完全限定名
+#      # 该类需要实现 SimpleJob, DataflowJob 或 ScriptJob 接口
+#      elasticJobClass: top.tangtian.job.samplejob.OrderReconciliationJob
+#
+#      # Cron表达式: 秒 分 时 日 月 周
+#      # 0 0 2 * * ? = 每天凌晨2点执行
+#      # 其他示例:
+#      #   0 */30 * * * ?  = 每30分钟执行
+#      #   0 0 */2 * * ?   = 每2小时执行
+#      #   0 0 2 1 * ?     = 每月1号凌晨2点执行
+#      cron: 0 */1 * * * ?
+#
+#      # 作业分片总数
+#      # 3表示将任务分成3片，可以在最多3个实例上并行执行
+#      # 如果实例数少于分片数，一个实例会处理多个分片
+#      # 如果实例数多于分片数，多余实例会空闲待命(failover场景)
+#      shardingTotalCount: 3
+#
+#      # 分片序号和参数的对照表
+#      # 格式: 分片序号=参数值，多个用逗号分隔
+#      # 0=ORDER: 分片0处理订单对账
+#      # 1=PAYMENT: 分片1处理支付对账
+#      # 2=LOGISTICS: 分片2处理物流对账
+#      # 可以在Job中通过 context.getShardingParameter() 获取
+#      shardingItemParameters: 0=ORDER,1=PAYMENT,2=LOGISTICS
+#
+#      # 本地配置是否覆盖注册中心配置
+#      # true: 每次启动都用本地配置更新ZK
+#      # false: 以ZK中的配置为准，本地配置仅在首次启动时生效
+#      # 建议: 开发环境用true便于调试，生产环境用false避免误操作
+#      overwrite: true
+#
+#      # 其他可选参数(未配置，使用默认值):
+#      # jobParameter: ""                     # 作业自定义参数
+#      # failover: false                      # 是否开启失效转移
+#      # misfire: true                        # 是否开启错过执行补偿
+#      # description: ""                      # 作业描述
+#      # monitorExecution: true               # 是否监控作业运行状态
+#      # maxTimeDiffSeconds: -1               # 最大容忍时间差(-1不检查)
+#      # reconcileIntervalMinutes: 10         # 修复状态不一致的间隔时间
+#      # jobShardingStrategyClass: ""         # 分片策略类(默认平均分配)
+#      # jobExecutorServiceHandlerType: ""    # 线程池类型
+#      # jobErrorHandlerType: ""              # 错误处理类型
+#      # disabled: false                      # 是否禁用作业启动
+#
+#    # -------------------- 支付对账任务 --------------------
+#    paymentReconciliationJob:
+#      # 支付对账任务实现类
+#      elasticJobClass: top.tangtian.job.samplejob.PaymentReconciliationJob
+#
+#      # 每天凌晨2点30分执行
+#      # 比订单对账晚30分钟，避免同时执行造成资源竞争
+#      cron: 0 30 2 * * ?
+#
+#      # 分2片执行
+#      # 可能的分配策略:
+#      # - 按支付渠道: 微信支付、支付宝
+#      # - 按时间范围: 上半月、下半月
+#      # - 按商户: A类商户、B类商户
+#      shardingTotalCount: 2
+#
+#      # 未配置 shardingItemParameters
+#      # 这种情况下，分片参数为空字符串
+#      # Job中可以通过 context.getShardingItem() 获取分片序号(0或1)
+#      # 然后根据序号自定义处理逻辑
+#
+#      # 本地配置覆盖ZK配置
+#      overwrite: true
+
+
+# ==================== 配置说明总结 ====================
+#
+# 1. 作业调度时间:
+#    - orderReconciliationJob: 每天 02:00 执行
+#    - paymentReconciliationJob: 每天 02:30 执行
+#
+# 2. 并发处理能力:
+#    - orderReconciliationJob: 最多3个实例并行处理
+#    - paymentReconciliationJob: 最多2个实例并行处理
+#
+# 3. 高可用保障:
+#    - 通过ZooKeeper实现分布式协调
+#    - 会话超时60秒后自动失效转移
+#    - 事件追踪记录所有执行历史
+#
+# 4. 分片处理逻辑示例:
+#    orderReconciliationJob根据业务类型分片:
+#    - 实例A处理: ORDER(订单)
+#    - 实例B处理: PAYMENT(支付)
+#    - 实例C处理: LOGISTICS(物流)
+#
+# 5. 建议优化项:
+#    - 生产环境将 overwrite 改为 false
+#    - 开启 failover: true 增强高可用
+#    - 添加 description 便于管理
+#    - 配置 maxTimeDiffSeconds 防止时钟不同步问题
+
+server:
+  port: 8084
+
+logging:
+  level:
+    top.tangtian: INFO
+    org.apache.shardingsphere.elasticjob: INFO
+    org.springframework.boot.autoconfigure: INFO
+    org.springframework.orm.jpa: INFO
