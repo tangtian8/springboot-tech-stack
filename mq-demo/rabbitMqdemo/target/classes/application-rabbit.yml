@@ -1,0 +1,20 @@
+spring:
+  rabbitmq:
+    host: ${rabbitmqHost}
+    port: ${rabbitmqPort}
+    username: ${rabbitmqUsername}
+    password: ${rabbitmqPassword}
+    virtual-host: ${rabbitmqVirtualHost}
+    connection-timeout: 5000
+    template:
+      retry:
+        enabled: true
+        initial-interval: 1000ms
+        max-attempts: 3
+        max-interval: 10000ms
+        multiplier: 1.0
+    listener:
+      simple:
+        acknowledge-mode: none
+        prefetch: 1
+

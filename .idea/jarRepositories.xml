@@ -7,14 +7,19 @@
       <option name="url" value="https://central.sonatype.com/repository/maven-snapshots/" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="yinhaiyun-sibpm-release" />
-      <option name="name" value="YinHaiYun SIBPM Release Repository" />
-      <option name="url" value="http://maven1.yinhaiyun.com/repository/sibpm-release/" />
-    </remote-repository>
-    <remote-repository>
       <option name="id" value="central" />
       <option name="name" value="Central Repository" />
       <option name="url" value="https://repo.maven.apache.org/maven2" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="yinhaiyun-public" />
+      <option name="name" value="public" />
+      <option name="url" value="http://maven1.yinhaiyun.com/repository/public/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="yinhaiyun-sibpm-release" />
+      <option name="name" value="YinHaiYun SIBPM Release Repository" />
+      <option name="url" value="http://maven1.yinhaiyun.com/repository/sibpm-release/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="aliyun-public" />

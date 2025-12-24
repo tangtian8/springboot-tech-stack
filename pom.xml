@@ -26,6 +26,7 @@
 		<module>mq-demo</module>
 		<module>scheduling-demo</module>
 		<module>springbean-demo</module>
+		<module>thread-demo</module>
 	</modules>
 	<scm>
 		<connection/>
