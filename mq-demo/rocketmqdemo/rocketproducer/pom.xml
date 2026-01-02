@@ -1,19 +1,23 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>top.tangtian</groupId>
-        <artifactId>demo</artifactId>
+        <groupId>top.tangtian.rocketmqdemo</groupId>
+        <artifactId>rocketmqdemo</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>mq-demo</artifactId>
-    <packaging>pom</packaging>
-    <name>mq-demo</name>
+
+    <groupId>top.tangtian.rocketmqdemo.producer</groupId>
+    <artifactId>rocketproducer</artifactId>
+    <packaging>jar</packaging>
+
+    <name>rocketproducer</name>
     <url>http://maven.apache.org</url>
-    <modules>
-        <module>rabbitMqdemo</module>
-        <module>rocketmqdemo</module>
-    </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -22,7 +26,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <build>
-        <finalName>mq-demo</finalName>
-    </build>
 </project>

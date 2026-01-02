@@ -7,11 +7,13 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="springbean-demo" />
+        <module name="rocketproducer" />
+        <module name="rocketmqconsumer" />
+        <module name="shardingspheredemo" />
+        <module name="thread-demo" />
         <module name="elasticjob-demo" />
         <module name="quartz" />
         <module name="rabbitMqdemo" />
-        <module name="shardingspheredemo" />
-        <module name="thread-demo" />
       </profile>
     </annotationProcessing>
   </component>
@@ -22,6 +24,9 @@
       <module name="mq-demo" options="" />
       <module name="quartz" options="-parameters" />
       <module name="rabbitMqdemo" options="-parameters" />
+      <module name="rocketmqconsumer" options="-parameters" />
+      <module name="rocketmqdemo" options="" />
+      <module name="rocketproducer" options="-parameters" />
       <module name="scheduling-demo" options="" />
       <module name="shardingspheredemo" options="-parameters" />
       <module name="springbean-demo" options="-parameters" />

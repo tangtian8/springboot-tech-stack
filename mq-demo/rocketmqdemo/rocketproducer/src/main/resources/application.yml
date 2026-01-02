@@ -1,0 +1,13 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: rocketmq-producer
+
+rocketmq:
+  name-server: 47.108.167.224:9876
+  producer:
+    group: producer-group-1
+    send-message-timeout: 6000
+    retry-times-when-send-failed: 2
