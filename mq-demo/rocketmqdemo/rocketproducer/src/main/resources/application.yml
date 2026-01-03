@@ -6,7 +6,7 @@ spring:
     name: rocketmq-producer
 
 rocketmq:
-  name-server: 47.108.167.224:9876
+  name-server: ${name-server}
   producer:
     group: producer-group-1
     send-message-timeout: 6000
