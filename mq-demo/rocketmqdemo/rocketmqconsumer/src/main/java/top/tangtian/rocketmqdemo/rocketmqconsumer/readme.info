@@ -1,0 +1,515 @@
+// ============================================
+// Spring Boot 中的消费者数量判断
+// ============================================
+
+/*
+核心概念：
+
+消费者实例数 = 应用实例数 × 每个应用中的监听器类数
+
+1. 一个 @RocketMQMessageListener 类 = 一个消费者实例
+2. 启动多个应用实例 = 多个消费者实例
+3. 同一个消费者组的所有消费者实例会负载均衡消费
+*/
+
+// ============================================
+// 案例一：单个监听器 = 1个消费者实例
+// ============================================
+
+package com.example.consumer.listener;
+
+import lombok.extern.slf4j.Slf4j;
+import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
+import org.apache.rocketmq.spring.core.RocketMQListener;
+import org.springframework.stereotype.Component;
+
+@Slf4j
+@Component
+@RocketMQMessageListener(
+    topic = "order-topic",
+    consumerGroup = "order-consumer-group"
+)
+public class OrderMessageListener implements RocketMQListener<String> {
+
+    @Override
+    public void onMessage(String message) {
+        log.info("收到消息: {}", message);
+    }
+}
+
+/*
+这种情况：
+├─ 如果只启动 1 个 Spring Boot 应用
+│  └─ 消费者数量 = 1
+│
+├─ 如果启动 2 个 Spring Boot 应用（端口不同）
+│  └─ 消费者数量 = 2（两个应用各有1个消费者）
+│
+└─ 如果启动 3 个 Spring Boot 应用
+   └─ 消费者数量 = 3
+
+关键：Spring Boot 应用启动时，会自动创建消费者实例
+*/
+
+// ============================================
+// 案例二：多个监听器 = 多个消费者实例
+// ============================================
+
+// 监听器1
+@Slf4j
+@Component
+@RocketMQMessageListener(
+    topic = "order-topic",
+    consumerGroup = "order-consumer-group"
+)
+public class OrderListener1 implements RocketMQListener<String> {
+    @Override
+    public void onMessage(String message) {
+        log.info("[监听器1] 收到消息: {}", message);
+    }
+}
+
+// 监听器2（不同的消费者组）
+@Slf4j
+@Component
+@RocketMQMessageListener(
+    topic = "order-topic",
+    consumerGroup = "order-consumer-group-2"  // ← 不同的消费者组
+)
+public class OrderListener2 implements RocketMQListener<String> {
+    @Override
+    public void onMessage(String message) {
+        log.info("[监听器2] 收到消息: {}", message);
+    }
+}
+
+/*
+这种情况：
+├─ 启动 1 个应用
+│  ├─ order-consumer-group: 1个消费者实例
+│  └─ order-consumer-group-2: 1个消费者实例
+│
+└─ 启动 2 个应用
+   ├─ order-consumer-group: 2个消费者实例
+   └─ order-consumer-group-2: 2个消费者实例
+
+注意：
+1. 同一个消费者组的多个实例会负载均衡
+2. 不同消费者组的实例会独立消费（各消费一份完整的消息）
+*/
+
+// ============================================
+// 案例三：如何增加消费者数量
+// ============================================
+
+// 方法1：启动多个应用实例（推荐）
+/*
+在不同端口启动多个应用：
+
+Terminal 1:
+java -jar consumer.jar --server.port=8081
+
+Terminal 2:
+java -jar consumer.jar --server.port=8082
+
+Terminal 3:
+java -jar consumer.jar --server.port=8083
+
+结果：3个应用 × 1个监听器 = 3个消费者实例
+*/
+
+// 方法2：在同一个应用中配置多线程消费
+@Slf4j
+@Component
+@RocketMQMessageListener(
+    topic = "order-topic",
+    consumerGroup = "order-consumer-group",
+    consumeThreadMax = 64,  // ← 最大消费线程数
+    consumeThreadMin = 20   // ← 最小消费线程数
+)
+public class OrderListenerWithThreads implements RocketMQListener<String> {
+
+    @Override
+    public void onMessage(String message) {
+        log.info("[线程: {}] 收到消息: {}",
+            Thread.currentThread().getName(), message);
+    }
+}
+
+/*
+注意区分：
+- 消费者实例数：决定队列如何分配
+- 消费线程数：决定单个消费者的并发处理能力
+
+举例：
+- 4个队列，2个消费者实例
+  ├─ 消费者1: 分配Queue 0, 1（每个队列用20-64个线程并发消费）
+  └─ 消费者2: 分配Queue 2, 3（每个队列用20-64个线程并发消费）
+*/
+
+// ============================================
+// 案例四：查看实际运行的消费者数量
+// ============================================
+
+package com.example.consumer.config;
+
+import lombok.extern.slf4j.Slf4j;
+import org.apache.rocketmq.spring.core.RocketMQListener;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
+
+import java.util.Map;
+
+@Slf4j
+@Component
+public class ConsumerInfoPrinter implements CommandLineRunner {
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    @Override
+    public void run(String... args) throws Exception {
+        // 等待消费者启动完成
+        Thread.sleep(3000);
+
+        log.info("========================================");
+        log.info("RocketMQ 消费者信息统计");
+        log.info("========================================");
+
+        // 查找所有的 RocketMQListener Bean
+        Map<String, RocketMQListener> listeners =
+            applicationContext.getBeansOfType(RocketMQListener.class);
+
+        log.info("当前应用中的消费者监听器数量: {}", listeners.size());
+
+        int index = 1;
+        for (Map.Entry<String, RocketMQListener> entry : listeners.entrySet()) {
+            String beanName = entry.getKey();
+            Object listener = entry.getValue();
+
+            // 获取注解信息
+            org.apache.rocketmq.spring.annotation.RocketMQMessageListener annotation =
+                listener.getClass().getAnnotation(
+                    org.apache.rocketmq.spring.annotation.RocketMQMessageListener.class);
+
+            if (annotation != null) {
+                log.info("\n监听器 {}: {}", index++, beanName);
+                log.info("  Topic: {}", annotation.topic());
+                log.info("  消费者组: {}", annotation.consumerGroup());
+                log.info("  消费线程数: {} ~ {}",
+                    annotation.consumeThreadMin(),
+                    annotation.consumeThreadMax());
+                log.info("  消费模式: {}", annotation.messageModel());
+            }
+        }
+
+        log.info("\n========================================");
+        log.info("提示：");
+        log.info("1. 当前应用有 {} 个消费者实例", listeners.size());
+        log.info("2. 如果启动多个应用副本，消费者总数 = 应用数 × {}", listeners.size());
+        log.info("========================================\n");
+    }
+}
+
+/*
+输出示例：
+
+========================================
+RocketMQ 消费者信息统计
+========================================
+当前应用中的消费者监听器数量: 1
+
+监听器 1: orderMessageListener
+  Topic: order-topic
+  消费者组: order-consumer-group
+  消费线程数: 20 ~ 64
+  消费模式: CLUSTERING
+
+========================================
+提示：
+1. 当前应用有 1 个消费者实例
+2. 如果启动多个应用副本，消费者总数 = 应用数 × 1
+========================================
+*/
+
+// ============================================
+// 案例五：通过代码获取消费者实例信息
+// ============================================
+
+package com.example.consumer.service;
+
+import lombok.extern.slf4j.Slf4j;
+import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
+import org.apache.rocketmq.spring.autoconfigure.RocketMQProperties;
+import org.apache.rocketmq.spring.support.DefaultRocketMQListenerContainer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
+
+@Slf4j
+@Service
+public class ConsumerMonitorService {
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    /**
+     * 获取消费者实例的详细信息
+     */
+    public void printConsumerDetails() {
+        // 获取所有的 RocketMQ 消费者容器
+        Map<String, DefaultRocketMQListenerContainer> containers =
+            applicationContext.getBeansOfType(DefaultRocketMQListenerContainer.class);
+
+        log.info("\n╔════════════════════════════════════════╗");
+        log.info("║     RocketMQ 消费者实例详细信息         ║");
+        log.info("╚════════════════════════════════════════╝\n");
+
+        log.info("消费者容器数量: {}", containers.size());
+
+        int index = 1;
+        for (Map.Entry<String, DefaultRocketMQListenerContainer> entry : containers.entrySet()) {
+            String containerName = entry.getKey();
+            DefaultRocketMQListenerContainer container = entry.getValue();
+
+            try {
+                // 通过反射获取底层的 DefaultMQPushConsumer
+                java.lang.reflect.Field field =
+                    DefaultRocketMQListenerContainer.class.getDeclaredField("consumer");
+                field.setAccessible(true);
+                DefaultMQPushConsumer consumer = (DefaultMQPushConsumer) field.get(container);
+
+                log.info("\n消费者实例 {}: {}", index++, containerName);
+                log.info("├─ 消费者组: {}", consumer.getConsumerGroup());
+                log.info("├─ 实例名称: {}", consumer.getInstanceName());
+                log.info("├─ 消费线程数: {} ~ {}",
+                    consumer.getConsumeThreadMin(),
+                    consumer.getConsumeThreadMax());
+
+                // 查看分配的队列
+                log.info("├─ 分配的队列:");
+                consumer.getDefaultMQPushConsumerImpl()
+                       .getRebalanceImpl()
+                       .getProcessQueueTable()
+                       .keySet()
+                       .forEach(queue ->
+                           log.info("│  └─ {} - Queue {}",
+                               queue.getBrokerName(), queue.getQueueId())
+                       );
+
+            } catch (Exception e) {
+                log.error("获取消费者信息失败", e);
+            }
+        }
+
+        log.info("\n════════════════════════════════════════\n");
+    }
+}
+
+/*
+输出示例：
+
+╔════════════════════════════════════════╗
+║     RocketMQ 消费者实例详细信息         ║
+╚════════════════════════════════════════╝
+
+消费者容器数量: 1
+
+消费者实例 1: org.apache.rocketmq.spring.support.DefaultRocketMQListenerContainer@abc123
+├─ 消费者组: order-consumer-group
+├─ 实例名称: DEFAULT
+├─ 消费线程数: 20 ~ 64
+├─ 分配的队列:
+│  └─ broker-a - Queue 0
+│  └─ broker-a - Queue 1
+│  └─ broker-a - Queue 2
+│  └─ broker-a - Queue 3
+
+════════════════════════════════════════
+*/
+
+// ============================================
+// 案例六：使用 Spring Actuator 监控
+// ============================================
+
+// 1. 添加依赖
+/*
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+*/
+
+// 2. 配置 application.yml
+/*
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,beans,metrics
+  endpoint:
+    health:
+      show-details: always
+*/
+
+// 3. 自定义健康检查端点
+package com.example.consumer.health;
+
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
+
+import java.util.Map;
+
+@Component
+public class RocketMQConsumerHealthIndicator implements HealthIndicator {
+
+    private final ApplicationContext applicationContext;
+
+    public RocketMQConsumerHealthIndicator(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+
+    @Override
+    public Health health() {
+        try {
+            Map<String, org.apache.rocketmq.spring.support.DefaultRocketMQListenerContainer> containers =
+                applicationContext.getBeansOfType(
+                    org.apache.rocketmq.spring.support.DefaultRocketMQListenerContainer.class);
+
+            int consumerCount = containers.size();
+            boolean allRunning = containers.values().stream()
+                .allMatch(org.apache.rocketmq.spring.support.DefaultRocketMQListenerContainer::isRunning);
+
+            if (allRunning) {
+                return Health.up()
+                    .withDetail("consumerCount", consumerCount)
+                    .withDetail("status", "All consumers are running")
+                    .build();
+            } else {
+                return Health.down()
+                    .withDetail("consumerCount", consumerCount)
+                    .withDetail("status", "Some consumers are not running")
+                    .build();
+            }
+        } catch (Exception e) {
+            return Health.down()
+                .withDetail("error", e.getMessage())
+                .build();
+        }
+    }
+}
+
+/*
+访问：http://localhost:8081/actuator/health
+
+返回：
+{
+  "status": "UP",
+  "components": {
+    "rocketMQConsumer": {
+      "status": "UP",
+      "details": {
+        "consumerCount": 1,
+        "status": "All consumers are running"
+      }
+    }
+  }
+}
+*/
+
+// ============================================
+// 案例七：使用 mqadmin 命令查看消费者
+// ============================================
+
+/*
+在服务器上执行：
+
+# 查看消费者组的连接情况
+sh bin/mqadmin consumerConnection -n 127.0.0.1:9876 -g order-consumer-group
+
+输出示例：
+┌──────────────────────────────────────────────────────────────┐
+│ Consumer Group: order-consumer-group                          │
+├──────────────────────────────────────────────────────────────┤
+│ Client ID                            │ Client Address        │
+├──────────────────────────────────────┼──────────────────────┤
+│ 192.168.1.100@12345                  │ 192.168.1.100:54321  │
+│ 192.168.1.101@12346                  │ 192.168.1.101:54322  │
+└──────────────────────────────────────┴──────────────────────┘
+
+Consumer Count: 2  ← 这里！消费者数量
+
+# 查看消费者的详细信息
+sh bin/mqadmin consumerProgress -n 127.0.0.1:9876 -g order-consumer-group
+
+输出示例：
+Consumer Group: order-consumer-group
+Client Quantity: 2  ← 消费者数量
+Message Model: CLUSTERING
+Consume Type: CONSUME_PASSIVELY
+
+┌──────────┬──────────┬──────────┬──────────┐
+│ Topic    │ Broker   │ Queue ID │ Consumer │
+├──────────┼──────────┼──────────┼──────────┤
+│ order-   │ broker-a │    0     │ 192.168. │
+│ topic    │          │          │ 1.100    │
+├──────────┼──────────┼──────────┼──────────┤
+│ order-   │ broker-a │    1     │ 192.168. │
+│ topic    │          │          │ 1.100    │
+├──────────┼──────────┼──────────┼──────────┤
+│ order-   │ broker-a │    2     │ 192.168. │
+│ topic    │          │          │ 1.101    │
+├──────────┼──────────┼──────────┼──────────┤
+│ order-   │ broker-a │    3     │ 192.168. │
+│ topic    │          │          │ 1.101    │
+└──────────┴──────────┴──────────┴──────────┘
+
+可以看到：
+- 消费者1 (192.168.1.100) 负责 Queue 0, 1
+- 消费者2 (192.168.1.101) 负责 Queue 2, 3
+*/
+
+// ============================================
+// 完整的判断清单
+// ============================================
+
+/*
+如何判断 Spring Boot 中的消费者数量：
+
+方法1：看代码
+├─ 统计 @RocketMQMessageListener 注解的类数量
+├─ 同一个消费者组的监听器 = 1个消费者实例
+└─ 启动N个应用 × M个监听器 = N×M 个消费者实例
+
+方法2：看启动日志
+├─ 搜索 "Starting RocketMQ consumer"
+└─ 每行对应一个消费者实例
+
+方法3：看应用实例数
+├─ 在不同端口启动了几个应用
+└─ 消费者数 = 应用数 × 监听器数
+
+方法4：使用 Actuator 端点
+└─ 访问 /actuator/health 查看消费者状态
+
+方法5：使用 mqadmin 命令
+├─ consumerConnection：查看连接数
+└─ consumerProgress：查看队列分配
+
+方法6：在代码中统计
+└─ 使用 ApplicationContext 查找所有 RocketMQListener Bean
+
+关键理解：
+═══════════════════════════════════════════════════════
+1. 一个 @RocketMQMessageListener 类 = 一个消费者实例
+2. 消费者实例数 ≠ 消费线程数
+3. 同一消费者组的多个实例会负载均衡
+4. 最佳实践：消费者实例数 = Topic的队列数
+═══════════════════════════════════════════════════════
+*/

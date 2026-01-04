@@ -14,7 +14,8 @@ import top.tangtian.rocketmqdemo.rocketmqconsumer.entity.OrderMessage;
 @Component
 @RocketMQMessageListener(
 		topic = "order-topic",
-		consumerGroup = "order-consumer-group"
+		consumerGroup = "order-consumer-group",
+		consumeThreadMax = 2
 )
 public class OrderMessageListener implements RocketMQListener<OrderMessage> {
 

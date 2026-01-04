@@ -6,7 +6,7 @@ spring:
     name: rocketmq-consumer
 
 rocketmq:
-  name-server: 47.108.167.224:9876
+  name-server: ${name-server}
   # 添加这个配置，即使消费者不发送消息
   producer:
     group: consumer-producer-group

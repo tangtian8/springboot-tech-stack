@@ -14,6 +14,7 @@
         <module name="elasticjob-demo" />
         <module name="quartz" />
         <module name="rabbitMqdemo" />
+        <module name="rocketmqnativedemo" />
       </profile>
     </annotationProcessing>
   </component>
@@ -26,6 +27,7 @@
       <module name="rabbitMqdemo" options="-parameters" />
       <module name="rocketmqconsumer" options="-parameters" />
       <module name="rocketmqdemo" options="" />
+      <module name="rocketmqnativedemo" options="-parameters" />
       <module name="rocketproducer" options="-parameters" />
       <module name="scheduling-demo" options="" />
       <module name="shardingspheredemo" options="-parameters" />

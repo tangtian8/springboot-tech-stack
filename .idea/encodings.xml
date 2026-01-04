@@ -3,6 +3,7 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/mq-demo/rabbitMqdemo/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/mq-demo/rocketmqdemo/rocketmqconsumer/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mq-demo/rocketmqdemo/rocketmqnativedemo/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/mq-demo/rocketmqdemo/rocketproducer/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/mq-demo/rocketmqdemo/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/mq-demo/rocketmqdemo/src/main/resources" charset="UTF-8" />

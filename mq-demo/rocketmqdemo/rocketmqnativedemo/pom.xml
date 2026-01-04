@@ -7,17 +7,12 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>top.tangtian.rocketmqdemo</groupId>
-    <artifactId>rocketmqdemo</artifactId>
-    <packaging>pom</packaging>
+    <groupId>top.tangtian.rocketmqnativedemo</groupId>
+    <artifactId>rocketmqnativedemo</artifactId>
+    <packaging>jar</packaging>
 
-    <name>rocketmqdemo</name>
+    <name>rocketmqnativedemo</name>
     <url>http://maven.apache.org</url>
-    <modules>
-        <module>rocketproducer</module>
-        <module>rocketmqconsumer</module>
-        <module>rocketmqnativedemo</module>
-    </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -30,11 +25,11 @@
             <version>3.8.1</version>
             <scope>test</scope>
         </dependency>
-
+        <!-- https://mvnrepository.com/artifact/org.apache.rocketmq/rocketmq-client -->
         <dependency>
             <groupId>org.apache.rocketmq</groupId>
-            <artifactId>rocketmq-spring-boot-starter</artifactId>
-            <version>2.3.1</version>
+            <artifactId>rocketmq-client</artifactId>
+            <version>5.3.0</version>
         </dependency>
     </dependencies>
 </project>
