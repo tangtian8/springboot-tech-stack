@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="springbean-demo" />
+        <module name="functionandlambda-demo" />
         <module name="rocketproducer" />
         <module name="rocketmqconsumer" />
         <module name="shardingspheredemo" />
@@ -22,6 +23,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="demo" options="" />
       <module name="elasticjob-demo" options="-parameters" />
+      <module name="functionandlambda-demo" options="-parameters" />
       <module name="mq-demo" options="" />
       <module name="quartz" options="-parameters" />
       <module name="rabbitMqdemo" options="-parameters" />

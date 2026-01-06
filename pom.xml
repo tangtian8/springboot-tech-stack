@@ -27,7 +27,8 @@
 		<module>scheduling-demo</module>
 		<module>springbean-demo</module>
 		<module>thread-demo</module>
-	</modules>
+        <module>functionandlambda-demo</module>
+    </modules>
 	<scm>
 		<connection/>
 		<developerConnection/>
