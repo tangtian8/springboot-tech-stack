@@ -10,13 +10,13 @@
     <artifactId>elasticjob-demo</artifactId>
     <packaging>jar</packaging>
 
-    <name>elasticjob-demo</name>
+    <name>elasticjobDemo</name>
     <url>http://maven.apache.org</url>
 
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>21</java.version>
+        <java.version>17</java.version>
         <elastic-job.version>3.0.4</elastic-job.version>
     </properties>
     <dependencies>

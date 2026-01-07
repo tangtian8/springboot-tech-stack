@@ -16,6 +16,7 @@
         <module name="quartz" />
         <module name="rabbitMqdemo" />
         <module name="rocketmqnativedemo" />
+        <module name="javaversion-demo" />
       </profile>
     </annotationProcessing>
   </component>
@@ -24,6 +25,7 @@
       <module name="demo" options="" />
       <module name="elasticjob-demo" options="-parameters" />
       <module name="functionandlambda-demo" options="-parameters" />
+      <module name="javaversion-demo" options="-parameters" />
       <module name="mq-demo" options="" />
       <module name="quartz" options="-parameters" />
       <module name="rabbitMqdemo" options="-parameters" />

@@ -1,0 +1,15 @@
+package top.tangtian.springbean;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+/**
+ * Hello world!
+ *
+ */
+@SpringBootApplication
+public class BeanDemoApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(BeanDemoApplication.class, args);
+    }
+}

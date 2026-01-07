@@ -28,6 +28,7 @@
 		<module>springbean-demo</module>
 		<module>thread-demo</module>
         <module>functionandlambda-demo</module>
+        <module>javaversion-demo</module>
     </modules>
 	<scm>
 		<connection/>
