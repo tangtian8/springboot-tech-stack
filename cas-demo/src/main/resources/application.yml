@@ -1,0 +1,19 @@
+server:
+  port: 8081
+  servlet:
+    context-path: /client
+
+spring:
+  application:
+    name: cas-client-demo
+
+# CAS 配置
+cas:
+  # CAS Server 地址
+  server-url-prefix: http://localhost:8080/cas
+  # CAS Server 登录地址
+  server-login-url: http://localhost:8080/cas/login
+  # 客户端服务地址（本应用的访问地址）
+  client-host-url: http://localhost:8081/client
+  # 验证类型：CAS3 (支持属性)
+  validation-type: CAS3

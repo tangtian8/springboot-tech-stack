@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CAS Client Demo - Protected Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #28a745;
+            padding-bottom: 10px;
+        }
+        .user-info {
+            background-color: #d4edda;
+            padding: 15px;
+            border-left: 4px solid #28a745;
+            margin: 20px 0;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px 5px;
+            background-color: #dc3545;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #c82333;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table th, table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🎉 认证成功！</h1>
+
+    <div class="user-info">
+        <p><strong>恭喜！您已通过 CAS 认证</strong></p>
+        <p>这是一个受保护的页面，只有通过 CAS 认证的用户才能访问。</p>
+    </div>
+
+    <h2>用户信息</h2>
+    <table>
+        <tr>
+            <th>用户名</th>
+            <td th:text="${username}">casuser</td>
+        </tr>
+        <tr>
+            <th>权限</th>
+            <td th:text="${authorities}">ROLE_USER</td>
+        </tr>
+        <tr>
+            <th>认证状态</th>
+            <td><span style="color: green;">✓ 已认证</span></td>
+        </tr>
+    </table>
+
+    <h2>操作</h2>
+    <a href="/client/" class="btn btn-secondary">返回首页</a>
+    <a href="/client/logout/cas" class="btn">退出登录</a>
+
+    <h2>提示</h2>
+    <ul>
+        <li>退出登录后，将同时登出 CAS 服务端</li>
+        <li>如果有多个应用接入 CAS，退出后所有应用都会登出（单点登出）</li>
+        <li>可以尝试访问其他接入 CAS 的应用，无需再次登录</li>
+    </ul>
+</div>
+</body>
+</html>

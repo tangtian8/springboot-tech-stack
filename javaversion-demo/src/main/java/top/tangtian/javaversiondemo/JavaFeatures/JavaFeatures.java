@@ -11,7 +11,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Java 11-21 特性综合演示
@@ -42,7 +41,7 @@ public class JavaFeatures {
 		demonstrateJava17Features();
 
 		// Java 21 特性
-//		demonstrateJava21Features();
+		demonstrateJava21Features();
 	}
 
 	// ========== Java 11 特性 ==========
@@ -204,16 +203,16 @@ public class JavaFeatures {
 		System.out.println("【Java 17 (LTS) 特性】");
 
 		// 1. Sealed Classes (正式版)
-//		System.out.println("1. 密封类 (正式版):");
-//		Shape circle = new Circle(5.0);
-//		double area = calculateArea(circle);
-//		System.out.println("  圆形面积: " + area);
-//
-//		// 2. Pattern Matching for switch (预览)
-//		System.out.println("\n2. switch 的模式匹配 (预览):");
-//		Object testObj = "Hello";
-//		String result = formatObject(testObj);
-//		System.out.println("  结果: " + result);
+		System.out.println("1. 密封类 (正式版):");
+		Shape circle = new Circle(5.0);
+		double area = calculateArea(circle);
+		System.out.println("  圆形面积: " + area);
+
+		// 2. Pattern Matching for switch (预览)
+		System.out.println("\n2. switch 的模式匹配 (预览):");
+		Object testObj = "Hello";
+		String result = formatObject(testObj);
+		System.out.println("  结果: " + result);
 
 		// 3. Enhanced Pseudo-Random Number Generators
 		System.out.println("\n3. 增强的随机数生成器:");
@@ -223,111 +222,111 @@ public class JavaFeatures {
 		System.out.println();
 	}
 
-//	// ========== Java 21 特性 ==========
-//	static void demonstrateJava21Features() {
-//		System.out.println("【Java 21 (LTS) 特性】");
-//
-//		// 1. Record Patterns (正式版)
-//		System.out.println("1. Record 模式 (正式版):");
-//		Point point = new Point(10, 20);
-//		if (point instanceof Point(int x, int y)) {
-//			System.out.println("  x = " + x + ", y = " + y);
-//		}
-//
-//		// 2. Pattern Matching for switch (正式版)
-//		System.out.println("\n2. switch 模式匹配 (正式版):");
-//		System.out.println(describeObject("Hello"));
-//		System.out.println(describeObject(42));
-//		System.out.println(describeObject(3.14));
-//		System.out.println(describeObject(null));
-//
-//		// 3. Sequenced Collections
-//		System.out.println("\n3. 有序集合 (Sequenced Collections):");
-//		List<String> list = new ArrayList<>(List.of("A", "B", "C"));
-//		System.out.println("  第一个: " + list.getFirst());
-//		System.out.println("  最后一个: " + list.getLast());
-//		System.out.println("  反转: " + list.reversed());
-//
-//		// 4. String Templates (预览)
-//		System.out.println("\n4. 字符串模板 (预览):");
-//		String name = "Java";
-//		int version = 21;
-//		System.out.println("  " + name + " " + version); // 传统方式
-//
-//		// 5. Virtual Threads (正式版)
-//		System.out.println("\n5. 虚拟线程 (正式版):");
-//		demonstrateVirtualThreads();
-//
-//		System.out.println();
-//	}
+	// ========== Java 21 特性 ==========
+	static void demonstrateJava21Features() {
+		System.out.println("【Java 21 (LTS) 特性】");
+
+		// 1. Record Patterns (正式版)
+		System.out.println("1. Record 模式 (正式版):");
+		Point point = new Point(10, 20);
+		if (point instanceof Point(int x, int y)) {
+			System.out.println("  x = " + x + ", y = " + y);
+		}
+
+		// 2. Pattern Matching for switch (正式版)
+		System.out.println("\n2. switch 模式匹配 (正式版):");
+		System.out.println(describeObject("Hello"));
+		System.out.println(describeObject(42));
+		System.out.println(describeObject(3.14));
+		System.out.println(describeObject(null));
+
+		// 3. Sequenced Collections
+		System.out.println("\n3. 有序集合 (Sequenced Collections):");
+		List<String> list = new ArrayList<>(List.of("A", "B", "C"));
+		System.out.println("  第一个: " + list.getFirst());
+		System.out.println("  最后一个: " + list.getLast());
+		System.out.println("  反转: " + list.reversed());
+
+		// 4. String Templates (预览)
+		System.out.println("\n4. 字符串模板 (预览):");
+		String name = "Java";
+		int version = 21;
+		System.out.println("  " + name + " " + version); // 传统方式
+
+		// 5. Virtual Threads (正式版)
+		System.out.println("\n5. 虚拟线程 (正式版):");
+		demonstrateVirtualThreads();
+
+		System.out.println();
+	}
 
 	// ========== 辅助方法 ==========
 
-//	// Java 17: 密封类
-//	static double calculateArea(Shape shape) {
-//		return switch (shape) {
-//			case Circle c -> Math.PI * c.radius() * c.radius();
-//			case Rectangle r -> r.width() * r.height();
-//		};
-//	}
-//
-//	// Java 17: switch 模式匹配
-//	static String formatObject(Object obj) {
-//		return switch (obj) {
-//			case String s -> "字符串: " + s;
-//			case Integer i -> "整数: " + i;
-//			default -> "其他类型";
-//		};
-//	}
+	// Java 17: 密封类
+	static double calculateArea(Shape shape) {
+		return switch (shape) {
+			case Circle c -> Math.PI * c.radius() * c.radius();
+			case Rectangle r -> r.width() * r.height();
+		};
+	}
 
-//	// Java 21: switch 模式匹配
-//	static String describeObject(Object obj) {
-//		return switch (obj) {
-//			case null -> "  这是 null";
-//			case String s when s.length() > 5 -> "  长字符串: " + s;
-//			case String s -> "  短字符串: " + s;
-//			case Integer i when i > 0 -> "  正整数: " + i;
-//			case Integer i -> "  非正整数: " + i;
-//			case Double d -> "  浮点数: " + d;
-//			default -> "  未知类型: " + obj.getClass().getSimpleName();
-//		};
-//	}
+	// Java 17: switch 模式匹配
+	static String formatObject(Object obj) {
+		return switch (obj) {
+			case String s -> "字符串: " + s;
+			case Integer i -> "整数: " + i;
+			default -> "其他类型";
+		};
+	}
 
-//	// Java 21: 虚拟线程演示
-//	static void demonstrateVirtualThreads() {
-//		try {
-//			// 创建虚拟线程
-//			Thread vThread = Thread.ofVirtual().start(() -> {
-//				System.out.println("  虚拟线程 ID: " + Thread.currentThread().threadId());
-//				System.out.println("  虚拟线程执行中...");
-//			});
-//			vThread.join();
-//
-//			// 使用虚拟线程执行大量任务
-//			System.out.println("  启动 10 个虚拟线程...");
-//			List<Thread> threads = new ArrayList<>();
-//			for (int i = 0; i < 10; i++) {
-//				int taskId = i;
-//				Thread thread = Thread.ofVirtual().start(() -> {
-//					// 模拟工作
-//					try {
-//						Thread.sleep(100);
-//					} catch (InterruptedException e) {
-//						Thread.currentThread().interrupt();
-//					}
-//				});
-//				threads.add(thread);
-//			}
-//
-//			for (Thread thread : threads) {
-//				thread.join();
-//			}
-//			System.out.println("  所有虚拟线程完成");
-//		} catch (InterruptedException e) {
-//			Thread.currentThread().interrupt();
-//			System.out.println("  线程被中断");
-//		}
-//	}
+	// Java 21: switch 模式匹配
+	static String describeObject(Object obj) {
+		return switch (obj) {
+			case null -> "  这是 null";
+			case String s when s.length() > 5 -> "  长字符串: " + s;
+			case String s -> "  短字符串: " + s;
+			case Integer i when i > 0 -> "  正整数: " + i;
+			case Integer i -> "  非正整数: " + i;
+			case Double d -> "  浮点数: " + d;
+			default -> "  未知类型: " + obj.getClass().getSimpleName();
+		};
+	}
+
+	// Java 21: 虚拟线程演示
+	static void demonstrateVirtualThreads() {
+		try {
+			// 创建虚拟线程
+			Thread vThread = Thread.ofVirtual().start(() -> {
+				System.out.println("  虚拟线程 ID: " + Thread.currentThread().threadId());
+				System.out.println("  虚拟线程执行中...");
+			});
+			vThread.join();
+
+			// 使用虚拟线程执行大量任务
+			System.out.println("  启动 10 个虚拟线程...");
+			List<Thread> threads = new ArrayList<>();
+			for (int i = 0; i < 10; i++) {
+				int taskId = i;
+				Thread thread = Thread.ofVirtual().start(() -> {
+					// 模拟工作
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						Thread.currentThread().interrupt();
+					}
+				});
+				threads.add(thread);
+			}
+
+			for (Thread thread : threads) {
+				thread.join();
+			}
+			System.out.println("  所有虚拟线程完成");
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			System.out.println("  线程被中断");
+		}
+	}
 }
 
 // ========== Record 定义 (Java 16+) ==========

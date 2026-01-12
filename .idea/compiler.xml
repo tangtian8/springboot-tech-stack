@@ -15,6 +15,7 @@
         <module name="elasticjob-demo" />
         <module name="quartz" />
         <module name="rabbitMqdemo" />
+        <module name="cas-demo" />
         <module name="rocketmqnativedemo" />
         <module name="javaversion-demo" />
       </profile>
@@ -22,6 +23,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="cas-demo" options="-parameters" />
       <module name="demo" options="" />
       <module name="elasticjob-demo" options="-parameters" />
       <module name="functionandlambda-demo" options="-parameters" />

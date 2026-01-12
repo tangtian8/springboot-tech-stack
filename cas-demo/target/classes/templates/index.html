@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CAS Client Demo - Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px 5px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .info {
+            background-color: #e7f3ff;
+            padding: 15px;
+            border-left: 4px solid #007bff;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🔐 CAS Client Demo</h1>
+
+    <div class="info">
+        <p><strong>欢迎来到 CAS 客户端演示应用！</strong></p>
+        <p>这是一个公开页面，无需认证即可访问。</p>
+    </div>
+
+    <h2>快速开始</h2>
+    <p>点击下面的链接访问受保护的资源，系统将自动跳转到 CAS 登录页面：</p>
+
+    <a href="/client/protected" class="btn">访问受保护页面</a>
+    <a href="/client/test" class="btn">API 测试</a>
+
+    <h2>系统信息</h2>
+    <ul>
+        <li>客户端地址: http://localhost:8081/client</li>
+        <li>CAS 服务端: http://localhost:8080/cas</li>
+        <li>测试用户: casuser / Mellon</li>
+    </ul>
+
+    <h2>功能说明</h2>
+    <ul>
+        <li>✅ 单点登录 (SSO)</li>
+        <li>✅ 单点登出 (SLO)</li>
+        <li>✅ 用户信息获取</li>
+        <li>✅ 会话管理</li>
+    </ul>
+</div>
+</body>
+</html>
