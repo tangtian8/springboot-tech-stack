@@ -2,43 +2,48 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="springbean-demo" />
         <module name="functionandlambda-demo" />
+        <module name="chain" />
         <module name="rocketproducer" />
-        <module name="rocketmqconsumer" />
-        <module name="shardingspheredemo" />
-        <module name="thread-demo" />
         <module name="elasticjob-demo" />
         <module name="quartz" />
         <module name="rabbitMqdemo" />
         <module name="cas-demo" />
         <module name="rocketmqnativedemo" />
+        <module name="springbean-demo" />
+        <module name="rocketmqconsumer" />
+        <module name="shardingspheredemo" />
+        <module name="thread-demo" />
         <module name="javaversion-demo" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
+    <option name="GENERATE_NO_WARNINGS" value="true" />
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="cas-demo" options="-parameters" />
-      <module name="demo" options="" />
-      <module name="elasticjob-demo" options="-parameters" />
-      <module name="functionandlambda-demo" options="-parameters" />
-      <module name="javaversion-demo" options="-parameters" />
-      <module name="mq-demo" options="" />
-      <module name="quartz" options="-parameters" />
-      <module name="rabbitMqdemo" options="-parameters" />
-      <module name="rocketmqconsumer" options="-parameters" />
-      <module name="rocketmqdemo" options="" />
-      <module name="rocketmqnativedemo" options="-parameters" />
-      <module name="rocketproducer" options="-parameters" />
-      <module name="scheduling-demo" options="" />
-      <module name="shardingspheredemo" options="-parameters" />
-      <module name="springbean-demo" options="-parameters" />
-      <module name="thread-demo" options="-parameters" />
+      <module name="cas-demo" options="-parameters -parameters" />
+      <module name="chain" options="-parameters -parameters" />
+      <module name="demo" options="-parameters" />
+      <module name="design-pattern" options="-parameters" />
+      <module name="elasticjob-demo" options="-parameters -parameters" />
+      <module name="functionandlambda-demo" options="-parameters -parameters" />
+      <module name="javaversion-demo" options="-parameters -parameters" />
+      <module name="mq-demo" options="-parameters" />
+      <module name="quartz" options="-parameters -parameters" />
+      <module name="rabbitMqdemo" options="-parameters -parameters" />
+      <module name="rocketmqconsumer" options="-parameters -parameters" />
+      <module name="rocketmqdemo" options="-parameters" />
+      <module name="rocketmqnativedemo" options="-parameters -parameters" />
+      <module name="rocketproducer" options="-parameters -parameters" />
+      <module name="scheduling-demo" options="-parameters" />
+      <module name="shardingspheredemo" options="-parameters -parameters" />
+      <module name="springbean-demo" options="-parameters -parameters" />
+      <module name="thread-demo" options="-parameters -parameters" />
     </option>
   </component>
 </project>

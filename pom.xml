@@ -30,6 +30,7 @@
         <module>functionandlambda-demo</module>
         <module>javaversion-demo</module>
 		<module>cas-demo</module>
+		<module>design-pattern</module>
 	</modules>
 	<scm>
 		<connection/>
