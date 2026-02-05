@@ -1,11 +1,18 @@
 package top.tangtian.designpattern.chain.http;
 
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import top.tangtian.designpattern.chain.http.chain.FilterChain;
 import top.tangtian.designpattern.chain.http.model.HttpRequest;
 import top.tangtian.designpattern.chain.http.model.HttpResponse;
 
-@SpringBootApplication
+/**
+ *一个请求处理管道，包含以下处理器：
+ *
+ * LoggingHandler - 记录请求日志
+ * AuthenticationHandler - 验证JWT token
+ * AuthorizationHandler - 检查用户权限
+ * RateLimitHandler - 限流（同一用户10秒内最多5次请求）
+ * BusinessHandler - 处理实际业务逻辑
+ */
 public class ChainDemo {
     public static void main(String[] args) {
         FilterChain chain = new FilterChain();

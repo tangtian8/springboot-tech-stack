@@ -10,6 +10,7 @@
     <name>designpattern</name>
     <modules>
         <module>chain</module>
+        <module>factory</module>
     </modules>
 
     <parent>

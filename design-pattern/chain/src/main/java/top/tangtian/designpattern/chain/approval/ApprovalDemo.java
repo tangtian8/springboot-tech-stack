@@ -7,6 +7,18 @@ import top.tangtian.designpattern.chain.approval.model.User;
 
 import java.util.Arrays;
 
+/**
+ *订单审批流程的责任链模式练习，这是责任链模式在业务场景中的经典应用。
+ * 业务场景
+ * 一个电商平台的订单需要经过多个审批环节：
+ *
+ * 订单验证 - 检查订单信息完整性
+ * 库存检查 - 验证商品库存是否充足
+ * 价格审核 - 根据订单金额决定审批级别
+ * 信用审核 - 检查用户信用额度
+ * 风控审核 - 风险评估（高额订单）
+ * 最终批准 - 订单确认
+ */
 public class ApprovalDemo {  public static void main(String[] args) {
     ApprovalChain chain = new ApprovalChain();
 

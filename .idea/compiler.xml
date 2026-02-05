@@ -8,6 +8,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="functionandlambda-demo" />
+        <module name="factory" />
         <module name="chain" />
         <module name="rocketproducer" />
         <module name="elasticjob-demo" />
@@ -31,6 +32,7 @@
       <module name="demo" options="-parameters" />
       <module name="design-pattern" options="-parameters" />
       <module name="elasticjob-demo" options="-parameters -parameters" />
+      <module name="factory" options="-parameters -parameters" />
       <module name="functionandlambda-demo" options="-parameters -parameters" />
       <module name="javaversion-demo" options="-parameters -parameters" />
       <module name="mq-demo" options="-parameters" />
