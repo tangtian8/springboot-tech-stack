@@ -11,6 +11,7 @@
     <modules>
         <module>chain</module>
         <module>factory</module>
+        <module>builder</module>
     </modules>
 
     <parent>

@@ -20,6 +20,7 @@
         <module name="rocketmqconsumer" />
         <module name="shardingspheredemo" />
         <module name="thread-demo" />
+        <module name="builder" />
         <module name="javaversion-demo" />
       </profile>
     </annotationProcessing>
@@ -27,6 +28,7 @@
   <component name="JavacSettings">
     <option name="GENERATE_NO_WARNINGS" value="true" />
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="builder" options="-parameters -parameters" />
       <module name="cas-demo" options="-parameters -parameters" />
       <module name="chain" options="-parameters -parameters" />
       <module name="demo" options="-parameters" />
